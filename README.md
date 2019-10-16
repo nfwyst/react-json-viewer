@@ -41,6 +41,8 @@ class Example extends Component {
             done: false,
           },
         ]}
+        oneTable
+        pureText
       />
     );
   }

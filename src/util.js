@@ -1,31 +1,34 @@
 /**
  * Created by narendrasisodiya on 28/10/16.
  */
-
-var ONE = 1;
-var loopObject = function loopObject(obj, cb, sorted) {
-  var keys = Object.keys(obj);
+const ONE = 1;
+const loopObject = function loopObject(obj, cb, sorted) {
+  const keys = Object.keys(obj);
   if (sorted === true) {
     keys.sort();
   }
-  return keys.map(function(key) {
+  return keys.map(key => {
     return cb(obj[key], key);
   });
 };
-var getSortedKeyString = function getSortedKeyString(obj) {
+const getSortedKeyString = function getSortedKeyString(obj) {
   return Object.keys(obj)
     .sort()
     .join(',');
 };
-var getType = function(val) {
+const getType = val => {
   return Object.prototype.toString.call(val).replace(/^\[object\s(.*)\]$/, '$1');
 };
-var getFirstEle = function getFirstEle(obj) {
+const getFirstEle = function getFirstEle(obj, oneTable) {
+  if (oneTable && obj instanceof Array) {
+    const [first] = obj.sort((a, b) => Object.keys(b).length - Object.keys(a).length);
+    return first;
+  }
   return obj[Object.keys(obj)[0]];
 };
 
-var allValuesSameInArray = function(arr) {
-  for (var i = 1; i < arr.length; i++) {
+const allValuesSameInArray = arr => {
+  for (let i = 1; i < arr.length; i += 1) {
     if (arr[i] !== arr[0]) {
       return false;
     }
@@ -33,41 +36,39 @@ var allValuesSameInArray = function(arr) {
   return true;
 };
 
-var checkIfArrayIsAOB = function checkIfArrayIsAOB(obj) {
+const checkIfArrayIsAOB = function checkIfArrayIsAOB(obj) {
   if (getType(obj) === 'Array' && obj.length > ONE && getType(getFirstEle(obj)) === 'Object') {
-    var test = loopObject(obj, function(row) {
+    const test = loopObject(obj, row => {
       if (getType(row) === 'Object') {
         return getSortedKeyString(row);
-      } else {
-        return '';
       }
+      return '';
     });
     if (test.length > ONE && test[0].length > ONE) {
       return allValuesSameInArray(test);
-    } else {
-      return false;
     }
-  } else {
     return false;
   }
+  return false;
 };
-var checkIfObjectIsOOB = function checkIfObjectIsOOB(obj) {
-  if (getType(obj) === 'Object' && Object.keys(obj).length > ONE && getType(getFirstEle(obj)) === 'Object') {
-    var test = loopObject(obj, function(row) {
+const checkIfObjectIsOOB = function checkIfObjectIsOOB(obj) {
+  if (
+    getType(obj) === 'Object' &&
+    Object.keys(obj).length > ONE &&
+    getType(getFirstEle(obj)) === 'Object'
+  ) {
+    const test = loopObject(obj, row => {
       if (getType(row) === 'Object') {
         return getSortedKeyString(row);
-      } else {
-        return '';
       }
+      return '';
     });
     if (test.length > ONE && test[0].length > ONE) {
       return allValuesSameInArray(test);
-    } else {
-      return false;
     }
-  } else {
     return false;
   }
+  return false;
 };
 
 module.exports = {
